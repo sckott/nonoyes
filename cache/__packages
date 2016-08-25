@@ -1,0 +1,10 @@
+base
+devtools
+httr
+xml2
+stringi
+dplyr
+ggplot2
+tokenizers
+tidytext
+tidyr

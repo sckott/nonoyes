@@ -30,9 +30,34 @@ transcript_parse <- function(z) {
   tmp
 }
 
-count_word <- function(x, word) {
-  length(grep(word, x, ignore.case = TRUE))
+try_tokenize <- function(x) {
+  if (!is.null(x)) {
+    unlist(
+      tokenize_words(x, stopwords = stopwords("en"))
+    )
+  } else {
+    NULL
+  }
 }
+
+sent_cont_plot <- function(z, x) {
+  z %>%
+    filter(word != "like") %>%
+    filter(name == x) %>%
+    inner_join(bing) %>%
+    count(word, sentiment, sort = TRUE) %>%
+    ungroup() %>%
+    filter(n > 17) %>%
+    mutate(n = ifelse(sentiment == "negative", -n, n)) %>%
+    mutate(word = reorder(word, n)) %>%
+    ggplot(aes(word, n, fill = sentiment)) +
+    geom_bar(stat = "identity") +
+    theme_grey(base_size = 16) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    ylab("Contribution to sentiment")
+}
+
+count_word <- function(x, word) length(grep(word, x, ignore.case = TRUE))
 
 strextract <- function(str, pattern) regmatches(str, regexpr(pattern, str))
 
